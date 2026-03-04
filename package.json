@@ -1,0 +1,54 @@
+{
+  "name": "api-2026-stage-2",
+  "version": "1.0.0",
+  "description": "This project was bootstrapped with Fastify-CLI.",
+  "main": "app.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
+    "dev:start": "fastify start --ignore-watch='.ts$ .csv' -w -l info -P dist/app.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "formatcheck": "prettier -c ."
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/autoload": "^6.0.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/jwt": "^10.0.0",
+    "@fastify/response-validation": "^3.0.3",
+    "@fastify/sensible": "^6.0.0",
+    "bcrypt": "^6.0.0",
+    "c12": "^4.0.0-beta.3",
+    "fast-csv": "^5.0.5",
+    "fastify": "^5.0.0",
+    "fastify-cli": "^7.4.1",
+    "fastify-plugin": "^5.0.0",
+    "yaml": "^2.8.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^24.10.13",
+    "@vitest/eslint-plugin": "^1.6.9",
+    "c8": "^10.1.2",
+    "concurrently": "^9.0.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "fastify-tsconfig": "^3.0.0",
+    "prettier": "^3.8.1",
+    "ts-node": "^10.4.0",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.56.0",
+    "vitest": "^4.0.18"
+  }
+}

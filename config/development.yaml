@@ -1,0 +1,5 @@
+extends:
+  - ./default.yaml
+
+db:
+  filename: ./userdatabase.csv

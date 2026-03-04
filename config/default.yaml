@@ -1,0 +1,11 @@
+auth:
+  access_token_secret: dev-access-secret-must-be-at-least-32-chars
+  access_token_expiration: 120
+  refresh_token_secret: dev-refresh-secret-must-be-at-least-32-chars
+  refresh_token_expiration: 3600
+  refresh_cookie_name: refresh_token
+  bcrypt_salt_rounds: 10
+
+routes:
+  api_prefix: /api
+  user_prefix: /user
