@@ -17,8 +17,20 @@ const ConfigSchema = z.object({
     bcrypt_salt_rounds: z.coerce.number().int().min(4).max(14).default(10),
   }),
   db: z.object({
-    filename: z.string().min(1),
+    filename: z.string().min(1).optional(),
+    host: z.string().optional(),
+    port: z.number().optional(),
+    database: z.string().optional(),
+    user: z.string().optional(),
+    password: z.string().optional(),
   }),
+  redis: z
+    .object({
+      host: z.string(),
+      port: z.number(),
+      db: z.number().optional(),
+    })
+    .optional(),
   routes: z.object({
     api_prefix: z.string().min(1).startsWith('/').default('/api'),
     user_prefix: z.string().min(1).startsWith('/').default('/user'),

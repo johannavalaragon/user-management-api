@@ -1,0 +1,51 @@
+# This is a template you may use
+#
+# project name (if omitted, uses current directory)
+name: cs3214-survey
+services:
+  postgres:
+    image: postgres:16-alpine
+    volumes:
+      - surveyappdbvolume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: dbpassw0rd
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U appuser -d appdb']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+
+  backend:
+    build:
+      context: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+    secrets:
+      - source: backend_config
+        target: /app/config/production.yaml
+        mode: 0444
+
+  frontend:
+    build:
+      context: ./react-2026-stage-1
+    ports:
+      - '8080:80'
+    depends_on:
+      - backend
+
+volumes:
+  surveyappdbvolume:
+
+secrets:
+  backend_config:
+    file: ./config/production.yaml
