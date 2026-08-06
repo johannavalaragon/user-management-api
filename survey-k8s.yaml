@@ -27,24 +27,26 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:16-alpine
-        env:
-        - name: POSTGRES_DB
-          value: appdb
-        - name: POSTGRES_USER
-          value: appuser
-        - name: POSTGRES_PASSWORD
-          value: dbpassw0rd
-        ports:
-        - containerPort: 5432
-        volumeMounts:
-        - name: db-data
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: appdb
+            - name: POSTGRES_USER
+              value: appuser
+            - name: POSTGRES_PASSWORD
+              value: dbpassw0rd
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
       volumes:
-      - name: db-data
-        persistentVolumeClaim:
-          claimName: surveyappdbvolume
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: surveyappdbvolume
 ---
 apiVersion: v1
 kind: Service
@@ -52,7 +54,7 @@ metadata:
   name: postgres
 spec:
   ports:
-  - port: 5432
+    - port: 5432
   selector:
     app: postgres
 
@@ -72,10 +74,10 @@ spec:
         app: redis
     spec:
       containers:
-      - name: redis
-        image: redis:7-alpine
-        ports:
-        - containerPort: 6379
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
 ---
 apiVersion: v1
 kind: Service
@@ -83,7 +85,7 @@ metadata:
   name: redis
 spec:
   ports:
-  - port: 6379
+    - port: 6379
   selector:
     app: redis
 
@@ -103,15 +105,17 @@ spec:
       labels:
         app: backend
     spec:
+      imagePullSecrets:
+        - name: my-registry-key
       containers:
-      - name: backend
-        image: survey-backend:latest
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: NODE_ENV
-          value: production
-        ports:
-        - containerPort: 3000
+        - name: backend
+          image: container.cs.vt.edu/johanna23/api-2026-stage-1/survey-backend:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ENV
+              value: production
+          ports:
+            - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
@@ -119,7 +123,7 @@ metadata:
   name: backend
 spec:
   ports:
-  - port: 3000
+    - port: 3000
   selector:
     app: backend
 
@@ -138,12 +142,14 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+        - name: my-registry-key
       containers:
-      - name: frontend
-        image: survey-frontend:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
+        - name: frontend
+          image: container.cs.vt.edu/johanna23/api-2026-stage-1/survey-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -151,42 +157,42 @@ metadata:
   name: frontend
 spec:
   ports:
-  - port: 80
+    - port: 80
   selector:
     app: frontend
 
 ---
-# 6. NGINX INGRESS (The equivalent of your nginx.conf)
+# 6. NGINX INGRESS
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: survey-ingress
   annotations:
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '3600'
 spec:
   rules:
-  - host: cs3754-survey-by-johanna23.discovery.cs.vt.edu
-    http:
-      paths:
-      - path: /api/
-        pathType: Prefix
-        backend:
-          service:
-            name: backend
-            port:
-              number: 3000
-      - path: /socket.io/
-        pathType: Prefix
-        backend:
-          service:
-            name: backend
-            port:
-              number: 3000
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 80
+    - host: cs3754-survey-by-johanna23.discovery.cs.vt.edu
+      http:
+        paths:
+          - path: /api/
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 3000
+          - path: /socket.io/
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 3000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

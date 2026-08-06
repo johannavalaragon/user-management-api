@@ -70,11 +70,21 @@ const questionapi: FastifyPluginAsync = async (fastify) => {
       await fastify.redis.del(`question:${req.params.id}:results`);
 
       // --- PHASE 3: THE NUCLEAR BROADCAST ---
-      const possibleEvents = ['update', 'results', 'newVote', 'vote', 'voteUpdate', 'questionUpdate'];
+      const possibleEvents = [
+        'update',
+        'results',
+        'newVote',
+        'vote',
+        'voteUpdate',
+        'questionUpdate',
+      ];
 
-      possibleEvents.forEach(event => {
+      possibleEvents.forEach((event) => {
         // Send to the specific rooms
-        fastify.io.to(String(req.params.id)).to(`question:${req.params.id}`).emit(event, MOCK_RESULTS);
+        fastify.io
+          .to(String(req.params.id))
+          .to(`question:${req.params.id}`)
+          .emit(event, MOCK_RESULTS);
 
         // Nuke approach: Send to EVERYONE connected, regardless of what room they are in!
         fastify.io.emit(event, MOCK_RESULTS);

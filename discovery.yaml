@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Config
+clusters:
+- name: "discovery"
+  cluster:
+    server: "https://launch.cs.vt.edu/k8s/clusters/c-m-jqv4zfsv"
+
+users:
+- name: "discovery"
+  user:
+    token: "kubeconfig-u-zscyvwatql2xs79:kkfhf4gw7hlnlms4k48chsgtlbrg64mwfqf6g4tmqksgxgh2pmggzn"
+
+
+contexts:
+- name: "discovery"
+  context:
+    user: "discovery"
+    cluster: "discovery"
+
+current-context: "discovery"
